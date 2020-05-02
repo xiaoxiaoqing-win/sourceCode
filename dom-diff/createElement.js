@@ -1,4 +1,4 @@
-export function createElement(tagName, props = {}, children) {
+function createElement(tagName, props = {}, ...children) {
     let vnode = {};
     if(!props.hasOwnProperty('key')) return;
 
@@ -39,9 +39,11 @@ function render(vnode) {
         if(Object.prototype.toString.call(child) === "[object Array]") {
             render(child)
         }
-        
+
         element.appendChild(child);
     })
 
     return elemenet
 }
+
+export default render;
