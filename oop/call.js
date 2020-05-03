@@ -6,10 +6,11 @@
 
 ~function anymous(proto) {
     function call(context = window, ...args) {
+        context === null ? context = window : null;
         context.$fn = this;
 
         let type = typeof context;
-        if(type !== "object" && type !== "function" && type !== symbol) {
+        if(type !== "object" && type !== "function" && type !== "symbol") {
             switch(type) {
                 case 'number':
                     context = new Number(context)
@@ -27,5 +28,29 @@
         return result;
     }
 
+    function apply(context = window, args) {
+        context === null ? context = window : null;
+        context.$fn = this;
+
+        let type = typeof context;
+        if(type !== "object" && type !== "function" && type !== "symbol") {
+            switch(type) {
+                case "number":
+                    context = new Number(context)
+                    break;
+                case "boolean":
+                    context = new Boolean(context)
+                    break;
+                case "string":
+                    context = new String(context)
+                    break;
+            }
+        }
+
+        let result = context.$fn(...args);
+        delete context.$fn;
+        return result;
+    }
     proto.call = call;
+    proto.apply = apply;
 }(Function.prototype)
