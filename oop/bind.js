@@ -5,7 +5,7 @@
         context === null ? context = window : null;
         var _this = this;
         return function() {
-            let innerArgs = Array.prototype.slice.call(0);
+            let innerArgs = Array.prototype.slice.call(arguments);
             let finalArgs = innerArgs.concat(args);
             return _this.call(context, ...finalArgs);
         }
