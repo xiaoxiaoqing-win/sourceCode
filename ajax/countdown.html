@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div>
+        距离抢购时间还剩：
+        <span id="spanBox">00:16:34</span>
+    </div>
+    <script>
+        /**
+         * 倒计时抢购
+         * 有一个目标核定时间：2020/02/25 20:30:00
+         * 获取当前的时间：2020/02/25 20:10:00
+         */
+        // 获取当前客户端本地时间:这个时间客户可以自己修改本地时间  真实项目中只能做一些参考的工作，不能做严谨的校验
+        // 严格校验的情况下 我们需要的时间是从服务器获取的
+        // let time = new Date();
+        // console.log(time)
+
+        // 如何从服务器获取时间，以及存在的问题
+        // 1.基于ajax向服务器发送请求  服务器返回的饿信息中 ，响应头中包含了服务器时间（需转换为标准时间）
+        // 网络http请求传送的时间差  尽可能减少这个时差  是倒计时抢购中的核心处理
+        // 2.由于网络传送存在时差 导致客户端接收到的服务器时间和真实时间存在偏差
+        // 当响应头信息返回（ajax状态为2），我们即获取到时间即可
+        // http传输中的head请求方法，就是只获取响应头信息
+
+        function queryServerTime() {
+            return new Promise(resolve => {
+                let xhr = new XMLHttpRequest;
+                xhr.open("head", './data.json');
+                xhr.onreadystatechange = function() {
+                    if(!/^(2|3)\d{2}$/.test(xhr.status)) return;
+                    if(xhr.readyState === 2) {
+
+                        // 响应头信息已经返回
+                        let time = xhr.getResponseHeader("date");
+                        time = new Date(time);
+                        resolve(time)
+                    }
+                }
+
+                xhr.send();
+            })
+            
+        }
+
+        async function init() {
+            let serverTime = await queryServerTime(),
+                targetTime = new Date('2020/06/16 20:40:00'),
+                autoTimer = null;
+
+            // 计算时间差
+            function computed() {
+                let spanTime = targetTime - serverTime;
+                if(spanTime <= 0) {
+                    console.log('到时间了～');
+                    clearInterval(autoTimer);
+                }
+                let hours = Math.floor(spanTime/(60*60*1000));
+                spanTime = spanTime - hours*60*60*1000;
+                let minutes = Math.floor(spanTime/(60*1000))
+                spanTime = spanTime -minutes*60*1000;
+                let seconds = Math.floor(spanTime / 1000)
+
+                hours = hours < 10 ? "0" + hours : hours;
+                minutes = minutes < 10 ? "0" + minutes : minutes;
+                seconds = seconds < 10 ? "0" + seconds : seconds;
+                spanBox.innerHTML = `${hours}:${minutes}:${seconds}`;
+            }
+            computed();
+
+            // 1s计算一次
+            autoTimer = setInterval(_ => {
+                // 重新获取服务器时间  但是这样有很大延迟 、服务器压力也大
+                serverTime = new Date(serverTime.getTime() + 1000)
+                // 我们可以基于第一次获取的时间，在原来的基础上，让其自动累加
+                computed()
+            }, 1000)
+        }
+
+        init();
+    </script>
+</body>
+</html>
