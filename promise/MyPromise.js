@@ -8,13 +8,11 @@ class MyPromise {
 
         // 定义change方法，因为我们发现好像resolve和reject方法共同的地方还挺多🤔
         let change = (status, value) => {
-            // console.log(value, 999);
             if (this.status !== "pending") return;  // 状态一旦改变，就不会再变
 
             this.status = status;
             this.value = value;
 
-            console.log(this.value, "111", this.status);
             // 根据状态判断要执行成功的方法或失败的方法
             let fnArr = status === "resolved" ? this.resolveArr : this.rejectArr;
 
@@ -91,7 +89,6 @@ class MyPromise {
             })
 
             this.rejectArr.push(reason => {
-                debugger
                 try {
                     let x = rejectFn(reason);
 
@@ -185,7 +182,7 @@ class MyPromise {
         let P = this.constructor;
         return this.then(
             value => P.resolve(finallyFn()).then(() => value),
-            reason => P.reject(finallyFn()).then(() => reason)
+            reason => P.resolve(finallyFn()).then(() => { throw reason })
         )
     }
 

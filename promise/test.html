@@ -10,39 +10,47 @@
 <body>
     <script src="MyPromise.js"></script>
     <script>
+        // new MyPromise((resolve, reject) => {
+        //     setTimeout(() => {
+        //         reject('失败');
+        //     }, 100)
+        // })
+        // .finally(() => {
+        //     console.log('执行了吗');
+        // })
+        // .then(
+        //     (value) => {
+        //         console.log('success', value)
+        //     },
+        //     (reason) => {
+        //         console.log('error', reason)
+        //     }
+        // )
         new MyPromise((resolve, reject) => {
             setTimeout(() => {
                 reject('失败');
             }, 100)
-        })
-        .finally(() => {
+        }).finally(() => {
             console.log('执行了吗');
+        }).then((value) => {
+            console.log('success', value)
+        }, (reason) => {
+            console.log('error', reason)
         })
-        .then(
-            (value) => {
-                console.log('success', value)
-            },
-            (reason) => {
-                console.log('error', reason)
-            }
-        )
 
         // new Promise((resolve, reject) => {
         //     setTimeout(() => {
         //         reject('失败');
         //     }, 100)
         // })
-        //     .finally(() => {
-        //         console.log('执行了吗');
-        //     })
-        //     .then(
-        //         (value) => {
-        //             console.log('success', value)
-        //         },
-        //         (reason) => {
-        //             console.log('error', reason)
-        //         }
-        //     )
+        // .finally(() => {
+        //     console.log('执行了吗');
+        // })
+        // .then((value) => {
+        //     console.log('success原生', value)
+        // }, (reason) => {
+        //     console.log('error原生', reason)
+        // })
     </script>
 </body>
 </html>
